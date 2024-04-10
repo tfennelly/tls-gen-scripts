@@ -13,10 +13,23 @@ OUTPUT_PATH="./certs"
 
 DO_CLEAN="no"
 COMMON_NAME=""
+IP_ADDRESS=""
 JAVA_STORES="no"
 PASSWORD="password"
 
-while getopts "cjn:o:" opt; do
+function usage() {
+    echo -e "\nUsage: $0 [-c] [-j] [-h] -n common_name [-i alt_ip_address] [-o output_path]"
+    echo "Options:"
+    echo "  -c: Clean the certs output directory (optional)"
+    echo "  -j: Generate Java keystore and truststore (optional)"
+    echo "  -h: Usage help (optional)"
+    echo "  -n: Common Name"
+    echo "  -i: Alternate IP Address (optional)"
+    echo "  -o: Certs output path (optional)"
+    exit 1
+} 
+
+while getopts "cjhn:i:o:" opt; do
     case "${opt}" in
         c)
           DO_CLEAN="yes"
@@ -24,8 +37,14 @@ while getopts "cjn:o:" opt; do
         j)
           JAVA_STORES="yes"
           ;;
+        h)
+          usage
+          ;;
         n)
           COMMON_NAME="${OPTARG}"
+          ;;
+        i)
+          IP_ADDRESS="${OPTARG}"
           ;;
         o)
           OUTPUT_PATH="${OPTARG}"
@@ -47,9 +66,9 @@ SERVER_CERT_CONF="./openssl-conf/server_cert.cnf"
 SERVER_CERT_EXT_CONF_TEMPLATE="./openssl-conf/server_ext_template.cnf"
 
 SERVER_CERT_EXT_CONF="$OUTPUT_PATH/server_ext.cnf" # this file will be created from $SERVER_CERT_EXT_CONF_TEMPLATE
-SERVER_KEY="$OUTPUT_PATH/server.key"
+SERVER_KEY="$OUTPUT_PATH/server.key.pem"
 SERVER_CSR="$OUTPUT_PATH/server.csr"
-SERVER_CRT="$OUTPUT_PATH/server.crt"
+SERVER_CRT="$OUTPUT_PATH/server.cert.pem"
 CA_KEY="$OUTPUT_PATH/ca.key"
 CA_CRT="$OUTPUT_PATH/cacert.pem"
 
@@ -64,13 +83,17 @@ if [[ "$DO_CLEAN" == "yes" ]]; then
     rm -rf "$SERVER_CERT_EXT_CONF" "$SERVER_KEY" "$SERVER_CSR" "$SERVER_CRT" "$CA_KEY" "$CA_CRT" "$JAVA_OUTPUT_PATH"
 fi
 if [[ -z $COMMON_NAME ]]; then
-    echo "ERROR: Common Name is required (-n)"
+    echo -e "\nERROR: Common Name is required (-n)"
+    usage
     exit 1
 fi
 
 mkdir -p "$OUTPUT_PATH"
 cat $SERVER_CERT_EXT_CONF_TEMPLATE > "$SERVER_CERT_EXT_CONF"
 echo "DNS.1 = $COMMON_NAME" >> "$SERVER_CERT_EXT_CONF"
+if [[ -n $IP_ADDRESS ]]; then
+    echo "IP.1 = $IP_ADDRESS" >> "$SERVER_CERT_EXT_CONF"
+fi
 
 function generate_root_ca {
   ## generate rootCA private key

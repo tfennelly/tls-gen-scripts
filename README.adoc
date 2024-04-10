@@ -1,0 +1,23 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+:toc:
+:toclevels: 4
+
+== TLS CA, Key and Cert generation utility scripts
+
+Run `./generate.sh -h` to see the usage help message.
+
+Example - 
+[source, bash]
+----
+$ ./generate.sh -cj \
+    -n "acme-app.io" \
+    -i "192.168.65.254" \
+    -o "/Users/jbogs/projects/acme-app/creds"
+----
