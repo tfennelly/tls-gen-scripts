@@ -8,6 +8,10 @@ endif::[]
 
 == TLS CA, Key and Cert generation utility scripts
 
+Utility script to generate a Self-Signed Certificate Authority (CA), Key and Certificate for a given domain name.
+
+The basis of the scripts used here were lifted from link:https://www.golinuxcloud.com/shell-script-to-generate-certificate-openssl/#Sample_shell_script_to_generate_RootCA_and_server_certificate[this golinuxcloud blog by DEEPAK PRASAD].
+
 Run `./generate.sh -h` to see the usage help message.
 
 Example - 
