@@ -26,7 +26,7 @@ done
 
 CA_CERT_CONF="./openssl-conf/ca_cert.cnf"
 SERVER_CERT_CONF="./openssl-conf/server_cert.cnf"
-SERVER_CERT_EXT_CONF_TEMPLATE="./openssl-conf/server_ext.cnf"
+SERVER_CERT_EXT_CONF_TEMPLATE="./openssl-conf/server_ext_template.cnf"
 
 SERVER_CERT_EXT_CONF="$OUTPUT_PATH/server_ext.cnf" # this file will be created from $SERVER_CERT_EXT_CONF_TEMPLATE
 SERVER_KEY="$OUTPUT_PATH/server.key"
