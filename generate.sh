@@ -16,25 +16,31 @@ COMMON_NAME=""
 JAVA_STORES="no"
 PASSWORD="password"
 
-while getopts ":cjon:" opt; do
-    case ${opt} in
-        c )
+while getopts "cjn:o:" opt; do
+    case "${opt}" in
+        c)
           DO_CLEAN="yes"
           ;;
-        j )
+        j)
           JAVA_STORES="yes"
           ;;
-        o )
-          OUTPUT_PATH=$OPTARG
+        n)
+          COMMON_NAME="${OPTARG}"
           ;;
-        n )
-          COMMON_NAME=$OPTARG
+        o)
+          OUTPUT_PATH="${OPTARG}"
+          greenEcho "Output path: $OUTPUT_PATH"
           ;;
-        \? )
+        \?)
           echo "Invalid option: $OPTARG"
+          ;;
+       :)
+          echo "Option -$OPTARG requires an argument" 1>&2
+          usage
           ;;
     esac
 done
+shift $((OPTIND -1))
 
 CA_CERT_CONF="./openssl-conf/ca_cert.cnf"
 SERVER_CERT_CONF="./openssl-conf/server_cert.cnf"
@@ -54,7 +60,7 @@ TRUSTSTORE_FILE="$JAVA_OUTPUT_PATH/truststore.jks"
 CA_DER_FILE="$JAVA_OUTPUT_PATH/ca.der"
 
 if [[ "$DO_CLEAN" == "yes" ]]; then
-    echo "Cleaning up the certs directory"
+    greenEcho "Cleaning the certs directory"
     rm -rf "$SERVER_CERT_EXT_CONF" "$SERVER_KEY" "$SERVER_CSR" "$SERVER_CRT" "$CA_KEY" "$CA_CRT" "$JAVA_OUTPUT_PATH"
 fi
 if [[ -z $COMMON_NAME ]]; then
@@ -108,6 +114,7 @@ function generate_server_certificate {
 
 function generate_java_stores() {
   if [[ "$JAVA_STORES" != "yes" ]]; then
+    greenEcho "\nSkipping Java store generation. -j flag is not set"
     return 0
   fi
   
